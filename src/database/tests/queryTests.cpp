@@ -3,21 +3,12 @@
 #include "database/Query.h"
 #include "gtest/gtest.h"
 
-#include <filesystem>
-
 namespace {
 
 struct QueryTest : public ::testing::Test {
 protected:
-  virtual void TearDown() override;
-
   Database::Connection m_conn;
 };
-
-void QueryTest::TearDown() {
-  std::filesystem::remove("temp.db3");
-  ::testing::Test::TearDown();
-}
 
 TEST_F(QueryTest, createSimpleQuery) {
   auto query = Database::Query{R"sql(select 1 'id')sql", m_conn};

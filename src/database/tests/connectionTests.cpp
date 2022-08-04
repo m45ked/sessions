@@ -1,6 +1,8 @@
 #include "database/Connection.h"
 #include "gtest/gtest.h"
 
+#include <filesystem>
+
 namespace {
 
 TEST(ConnectionTests, createDefaultConnection) {
@@ -9,6 +11,7 @@ TEST(ConnectionTests, createDefaultConnection) {
 
 TEST(ConnectionTests, createConnectionWithString) {
   auto conn = Database::Connection("temp.db3");
+  std::filesystem::remove("temp.db3");
 }
 
 } // namespace
