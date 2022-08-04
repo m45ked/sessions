@@ -31,14 +31,6 @@ std::string getLowerCaseString(const std::string &text) {
   return lowercaseName;
 }
 
-std::size_t getLength(const unsigned char *str) {
-  std::size_t length = 0;
-  while (static_cast<char>(*(str + length)) != '\0')
-    ++length;
-
-  return length;
-}
-
 } // namespace
 
 namespace Database {
