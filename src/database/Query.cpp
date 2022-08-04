@@ -94,7 +94,8 @@ double Query::Impl::getDouble(const std::string_view &fieldName) const {
 std::string Query::Impl::getString(const std::string_view &fieldName) const {
   const auto index = getIndex(m_columns, fieldName);
   const auto text = sqlite3_column_text(m_dbStatement, index);
-  return std::string(reinterpret_cast<const char *>(text));
+  const std::size_t length = sqlite3_column_bytes(m_dbStatement, index);
+  return {reinterpret_cast<const char *>(text), length};
 }
 
 Query::Query(const std::string_view &sql, Connection &connection)
