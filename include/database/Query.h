@@ -24,7 +24,7 @@ public:
       return getString(fieldName);
 
     assert(std::is_trivially_constructible_v<ValueT>);
-    return ValueT();
+    return ValueT{};
   }
 
 private:
