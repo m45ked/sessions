@@ -15,13 +15,6 @@
 
 namespace {
 
-int getIndex(const std::vector<std::string> &container,
-             const std::string_view &fieldName) {
-  const auto it =
-      std::find(std::begin(container), std::end(container), fieldName);
-  return std::distance(std::begin(container), it);
-}
-
 std::string getLowerCaseString(const std::string &text) {
   std::string lowercaseName = text;
   std::transform(std::begin(text), std::end(text), std::begin(lowercaseName),
@@ -47,6 +40,8 @@ public:
   void execute();
 
 private:
+  int getIndex(const std::string_view &fieldName) const;
+
   sqlite3_stmt *m_dbStatement;
   std::vector<std::string> m_columns;
 };
@@ -82,20 +77,26 @@ void Query::Impl::execute() {
 }
 
 int64_t Query::Impl::getInteger(const std::string_view &fieldName) const {
-  const auto index = getIndex(m_columns, fieldName);
+  const auto index = getIndex(fieldName);
   return sqlite3_column_int64(m_dbStatement, index);
 }
 
 double Query::Impl::getDouble(const std::string_view &fieldName) const {
-  const auto index = getIndex(m_columns, fieldName);
+  const auto index = getIndex(fieldName);
   return sqlite3_column_double(m_dbStatement, index);
 }
 
 std::string Query::Impl::getString(const std::string_view &fieldName) const {
-  const auto index = getIndex(m_columns, fieldName);
+  const auto index = getIndex(fieldName);
   const auto text = sqlite3_column_text(m_dbStatement, index);
   const std::size_t length = sqlite3_column_bytes(m_dbStatement, index);
   return {reinterpret_cast<const char *>(text), length};
+}
+
+int Query::Impl::getIndex(const std::string_view &fieldName) const {
+  const auto it =
+      std::find(std::begin(m_columns), std::end(m_columns), fieldName);
+  return std::distance(std::begin(m_columns), it);
 }
 
 Query::Query(const std::string_view &sql, Connection &connection)
