@@ -31,7 +31,6 @@ namespace Database {
 class Query::Impl {
 public:
   Impl(const std::string_view &sql, sqlite3 *dbConnection);
-  ~Impl();
 
   std::string getString(const std::string_view &fieldName) const;
   double getDouble(const std::string_view &fieldName) const;
@@ -42,34 +41,33 @@ public:
 private:
   int getIndex(const std::string_view &fieldName) const;
 
-  sqlite3_stmt *m_dbStatement;
+  std::shared_ptr<sqlite3_stmt> m_dbStatement;
   std::vector<std::string> m_columns;
 };
 
 Query::Impl::Impl(const std::string_view &sql, sqlite3 *dbConnection) {
   const char *outSql;
+  sqlite3_stmt *statement;
   const auto result = sqlite3_prepare_v2(dbConnection, sql.data(), sql.size(),
-                                         &m_dbStatement, &outSql);
-
+                                         &statement, &outSql);
+  m_dbStatement = std::shared_ptr<sqlite3_stmt>(statement, &sqlite3_finalize);
   if (result != SQLITE_OK) {
     throw IncorrectQuerySql(sql);
   }
 }
 
-Query::Impl::~Impl() { const auto result = sqlite3_finalize(m_dbStatement); }
-
 void Query::Impl::execute() {
-  while (sqlite3_step(m_dbStatement) != SQLITE_ROW) {
+  while (sqlite3_step(m_dbStatement.get()) != SQLITE_ROW) {
   }
 
   // const auto result = sqlite3_step(m_dbStatement);
   std::cout << fmt::format("Called \"{}\"\n",
-                           sqlite3_expanded_sql(m_dbStatement));
+                           sqlite3_expanded_sql(m_dbStatement.get()));
 
-  const auto columnCount = sqlite3_column_count(m_dbStatement);
+  const auto columnCount = sqlite3_column_count(m_dbStatement.get());
   for (auto i = 0; i < columnCount; ++i) {
-    const auto name =
-        getLowerCaseString(std::string{sqlite3_column_name(m_dbStatement, i)});
+    const auto name = getLowerCaseString(
+        std::string{sqlite3_column_name(m_dbStatement.get(), i)});
 
     std::cout << fmt::format("Got column: '{}'\n", name);
     m_columns.emplace_back(name);
@@ -78,18 +76,18 @@ void Query::Impl::execute() {
 
 int64_t Query::Impl::getInteger(const std::string_view &fieldName) const {
   const auto index = getIndex(fieldName);
-  return sqlite3_column_int64(m_dbStatement, index);
+  return sqlite3_column_int64(m_dbStatement.get(), index);
 }
 
 double Query::Impl::getDouble(const std::string_view &fieldName) const {
   const auto index = getIndex(fieldName);
-  return sqlite3_column_double(m_dbStatement, index);
+  return sqlite3_column_double(m_dbStatement.get(), index);
 }
 
 std::string Query::Impl::getString(const std::string_view &fieldName) const {
   const auto index = getIndex(fieldName);
-  const auto text = sqlite3_column_text(m_dbStatement, index);
-  const std::size_t length = sqlite3_column_bytes(m_dbStatement, index);
+  const auto text = sqlite3_column_text(m_dbStatement.get(), index);
+  const std::size_t length = sqlite3_column_bytes(m_dbStatement.get(), index);
   return {reinterpret_cast<const char *>(text), length};
 }
 
