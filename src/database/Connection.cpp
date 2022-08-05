@@ -5,7 +5,6 @@
 #include "fmt/format.h"
 
 #include "sqlite3.h"
-// #include "sqlite3ext.h"
 
 namespace Database {
 
@@ -47,7 +46,7 @@ Connection::Impl::Impl() {
 
 sqlite3 *Connection::Impl::getRawConnection() { return m_dbConnection.get(); }
 
-Connection::Connection() : m_impl(std::make_shared<Connection::Impl>("")) {}
+Connection::Connection() : m_impl(std::make_shared<Connection::Impl>()) {}
 
 Connection::Connection(const std::string_view &connectionString)
     : m_impl(std::make_shared<Connection::Impl>(connectionString)) {}
