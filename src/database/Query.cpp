@@ -50,7 +50,7 @@ Query::Impl::Impl(const std::string_view &sql, sqlite3 *dbConnection) {
   sqlite3_stmt *statement;
   const auto result = sqlite3_prepare_v2(dbConnection, sql.data(), sql.size(),
                                          &statement, &outSql);
-  m_dbStatement = std::shared_ptr<sqlite3_stmt>(statement, &sqlite3_finalize);
+  m_dbStatement = {statement, &sqlite3_finalize};
   if (result != SQLITE_OK) {
     throw IncorrectQuerySql(sql);
   }
