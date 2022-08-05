@@ -29,7 +29,7 @@ Connection::Impl::Impl(const std::string_view &connectionString) {
         fmt::format("Cannot open database '{}': error code {:x}",
                     connectionString, result));
   }
-  m_dbConnection = std::shared_ptr<sqlite3>{connection, &sqlite3_close};
+  m_dbConnection = {connection, &sqlite3_close};
 }
 
 Connection::Impl::Impl() {
@@ -41,7 +41,7 @@ Connection::Impl::Impl() {
     throw std::runtime_error(fmt::format(
         "Cannot open database '{}': error code {:x}", ":memory:", result));
   }
-  m_dbConnection = std::shared_ptr<sqlite3>{connection, &sqlite3_close};
+  m_dbConnection = {connection, &sqlite3_close};
 }
 
 sqlite3 *Connection::Impl::getRawConnection() { return m_dbConnection.get(); }
