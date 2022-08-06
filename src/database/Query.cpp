@@ -114,9 +114,4 @@ std::string Query::getString(const std::string_view &fieldName) {
   return m_impl->getString(fieldName);
 }
 
-void Query::setInteger(const std::string_view &fieldName, int64_t value) {
-  std::cout << fmt::format("setting value for field {:s} with value {:d}\n",
-                           fieldName, value);
-}
-
 } // namespace Database
