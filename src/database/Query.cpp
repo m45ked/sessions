@@ -1,17 +1,17 @@
-#include "database/Query.h"
-#include "database/Connection.h"
-#include "database/Exceptions.h"
-
-#include "sqlite/sqlite3.h"
-
-#include "fmt/format-inl.h"
-
 #include <algorithm>
 #include <iostream>
 #include <locale>
 #include <string_view>
 #include <type_traits>
 #include <vector>
+
+#include "sqlite/sqlite3.h"
+
+#include "fmt/format-inl.h"
+
+#include "database/Connection.h"
+#include "database/Exceptions.h"
+#include "database/Query.h"
 
 namespace {
 
@@ -60,7 +60,6 @@ void Query::Impl::execute() {
   while (sqlite3_step(m_dbStatement.get()) != SQLITE_ROW) {
   }
 
-  // const auto result = sqlite3_step(m_dbStatement);
   std::cout << fmt::format("Called \"{}\"\n",
                            sqlite3_expanded_sql(m_dbStatement.get()));
 
@@ -113,6 +112,11 @@ double Query::getDouble(const std::string_view &fieldName) {
 
 std::string Query::getString(const std::string_view &fieldName) {
   return m_impl->getString(fieldName);
+}
+
+void Query::setInteger(const std::string_view &fieldName, int64_t value) {
+  std::cout << fmt::format("setting value for field {:s} with value {:d}\n",
+                           fieldName, value);
 }
 
 } // namespace Database
