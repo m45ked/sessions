@@ -15,12 +15,11 @@
 
 namespace {
 
-std::string getLowerCaseString(const std::string &text) {
-  std::string lowercaseName = text;
-  std::transform(std::begin(text), std::end(text), std::begin(lowercaseName),
-                 [=](std::string::value_type c) {
-                   return std::tolower(c, std::locale());
-                 });
+std::string getLowerCaseString(const std::string_view &text) {
+  std::string lowercaseName = text.data();
+  transform(
+      begin(text), end(text), begin(lowercaseName),
+      [=](std::string::value_type c) { return tolower(c, std::locale()); });
   return lowercaseName;
 }
 
@@ -65,8 +64,8 @@ void Query::Impl::execute() {
 
   const auto columnCount = sqlite3_column_count(m_dbStatement.get());
   for (auto i = 0; i < columnCount; ++i) {
-    const auto name = getLowerCaseString(
-        std::string{sqlite3_column_name(m_dbStatement.get(), i)});
+    const auto name =
+        getLowerCaseString({sqlite3_column_name(m_dbStatement.get(), i)});
 
     std::cout << fmt::format("Got column: '{}'\n", name);
     m_columns.emplace_back(name);
@@ -91,9 +90,9 @@ std::string Query::Impl::getString(const std::string_view &fieldName) const {
 }
 
 int Query::Impl::getIndex(const std::string_view &fieldName) const {
-  const auto beginIt = std::begin(m_columns);
-  const auto it = std::find(beginIt, std::end(m_columns), fieldName);
-  return std::distance(beginIt, it);
+  const auto beginIt = begin(m_columns);
+  const auto it = find(beginIt, end(m_columns), fieldName);
+  return distance(beginIt, it);
 }
 
 Query::Query(const std::string_view &sql, Connection &connection)
