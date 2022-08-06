@@ -5,7 +5,7 @@
 
 namespace {
 
-struct QueryTest : public ::testing::Test {
+class QueryTest : public ::testing::Test {
 protected:
   Database::Connection m_conn;
 };
