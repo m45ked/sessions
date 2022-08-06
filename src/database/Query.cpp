@@ -91,9 +91,9 @@ std::string Query::Impl::getString(const std::string_view &fieldName) const {
 }
 
 int Query::Impl::getIndex(const std::string_view &fieldName) const {
-  const auto it =
-      std::find(std::begin(m_columns), std::end(m_columns), fieldName);
-  return std::distance(std::begin(m_columns), it);
+  const auto beginIt = std::begin(m_columns);
+  const auto it = std::find(beginIt, std::end(m_columns), fieldName);
+  return std::distance(beginIt, it);
 }
 
 Query::Query(const std::string_view &sql, Connection &connection)
