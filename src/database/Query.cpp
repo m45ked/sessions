@@ -17,9 +17,8 @@ namespace {
 
 std::string getLowerCaseString(const std::string_view &text) {
   std::string lowercaseName = text.data();
-  transform(
-      begin(text), end(text), begin(lowercaseName),
-      [=](std::string::value_type c) { return tolower(c, std::locale()); });
+  transform(begin(text), end(text), begin(lowercaseName),
+            [=](const auto c) { return tolower(c, std::locale()); });
   return lowercaseName;
 }
 
