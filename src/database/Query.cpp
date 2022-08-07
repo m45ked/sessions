@@ -55,16 +55,15 @@ Query::Impl::Impl(const std::string_view &sql, sqlite3 *dbConnection) {
 }
 
 void Query::Impl::execute() {
-  while (sqlite3_step(m_dbStatement.get()) != SQLITE_ROW) {
+  const auto stmt = m_dbStatement.get();
+  while (sqlite3_step(stmt) != SQLITE_ROW) {
   }
 
-  std::cout << fmt::format("Called \"{}\"\n",
-                           sqlite3_expanded_sql(m_dbStatement.get()));
+  std::cout << fmt::format("Called \"{}\"\n", sqlite3_expanded_sql(stmt));
 
-  const auto columnCount = sqlite3_column_count(m_dbStatement.get());
+  const auto columnCount = sqlite3_column_count(stmt);
   for (auto i = 0; i < columnCount; ++i) {
-    const auto name =
-        getLowerCaseString({sqlite3_column_name(m_dbStatement.get(), i)});
+    const auto name = getLowerCaseString({sqlite3_column_name(stmt, i)});
 
     std::cout << fmt::format("Got column: '{}'\n", name);
     m_columns.emplace_back(name);
