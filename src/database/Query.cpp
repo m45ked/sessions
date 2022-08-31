@@ -7,7 +7,7 @@
 
 #include "sqlite/sqlite3.h"
 
-#include "fmt/format-inl.h"
+#include "fmt/format.h"
 
 #include "database/Connection.h"
 #include "database/Exceptions.h"
