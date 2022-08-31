@@ -7,10 +7,11 @@
 
 #include "database/Connection_fwd.h"
 #include "database/Query_fwd.h"
+#include "database/database_export.h"
 
 namespace Database {
 
-class Query {
+class DATABASE_EXPORT Query {
 public:
   Query(const std::string_view &sql, Connection &connection);
   void execute();

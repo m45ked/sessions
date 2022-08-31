@@ -3,12 +3,14 @@
 #include <memory>
 #include <string_view>
 
-#include "database/Query_fwd.h"
 #include "sqlite3.h"
+
+#include "database/Query_fwd.h"
+#include "database/database_export.h"
 
 namespace Database {
 
-class Connection {
+class DATABASE_EXPORT Connection {
 public:
   Connection();
   Connection(const std::string_view &connectionString);

@@ -10,3 +10,5 @@ add_library(database
     Query.cpp
 )
 target_link_libraries(database sqlite_ext fmt::fmt)
+generate_export_header(database)
+install(TARGETS database DESTINATION ${LIBRARY_INSTALL_DIR})
