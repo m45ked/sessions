@@ -6,6 +6,24 @@
 
 #include "sqlite3.h"
 
+namespace {
+
+sqlite3 *createConnection(const std::string_view &connectionString,
+                          const int customFlags = 0) {
+  const auto flags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | customFlags;
+  sqlite3 *connection;
+  const auto result =
+      sqlite3_open_v2(connectionString.data(), &connection, flags, nullptr);
+  if (result != SQLITE_OK) {
+    throw std::runtime_error(
+        fmt::format("Cannot open database '{}': error code {:x}",
+                    connectionString, result));
+  }
+  return connection;
+}
+
+} // namespace
+
 namespace Database {
 
 class Connection::Impl {
@@ -20,28 +38,12 @@ private:
 };
 
 Connection::Impl::Impl(const std::string_view &connectionString) {
-  const auto flags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE;
-  sqlite3 *connection;
-  const auto result =
-      sqlite3_open_v2(connectionString.data(), &connection, flags, nullptr);
-  if (result != SQLITE_OK) {
-    throw std::runtime_error(
-        fmt::format("Cannot open database '{}': error code {:x}",
-                    connectionString, result));
-  }
-  m_dbConnection = {connection, &sqlite3_close};
+  m_dbConnection = {createConnection(connectionString), &sqlite3_close};
 }
 
 Connection::Impl::Impl() {
-  const auto flags =
-      SQLITE_OPEN_MEMORY | SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE;
-  sqlite3 *connection;
-  const auto result = sqlite3_open_v2(":memory:", &connection, flags, nullptr);
-  if (result != SQLITE_OK) {
-    throw std::runtime_error(fmt::format(
-        "Cannot open database '{}': error code {:x}", ":memory:", result));
-  }
-  m_dbConnection = {connection, &sqlite3_close};
+  m_dbConnection = {createConnection(":memory:", SQLITE_OPEN_MEMORY),
+                    &sqlite3_close};
 }
 
 sqlite3 *Connection::Impl::getRawConnection() { return m_dbConnection.get(); }
