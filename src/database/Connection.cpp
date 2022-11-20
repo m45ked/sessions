@@ -6,6 +6,8 @@
 
 #include "sqlite3.h"
 
+#include "database/Exceptions.h"
+
 namespace {
 
 sqlite3 *createConnection(const std::string_view &connectionString,
@@ -15,7 +17,7 @@ sqlite3 *createConnection(const std::string_view &connectionString,
   const auto result =
       sqlite3_open_v2(connectionString.data(), &connection, flags, nullptr);
   if (result != SQLITE_OK) {
-    throw std::runtime_error(
+    throw Database::ErrorOpeningDatabase(
         fmt::format("Cannot open database '{}': error code {:x}",
                     connectionString, result));
   }
