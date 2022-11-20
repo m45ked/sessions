@@ -24,21 +24,21 @@ TEST_F(QueryTest, getColumnValue_int) {
   auto query = Database::Query(R"sql(select 1 id)sql", m_conn);
   query.execute();
 
-  ASSERT_EQ(query.get<int>("id"), 1);
+  EXPECT_EQ(query.get<int>("id"), 1);
 }
 
 TEST_F(QueryTest, getColumnValue_double) {
   auto query = Database::Query(R"sql(select 1.5 id)sql", m_conn);
   query.execute();
 
-  ASSERT_EQ(query.get<double>("id"), 1.5);
+  EXPECT_EQ(query.get<double>("id"), 1.5);
 }
 
 TEST_F(QueryTest, getColumnValue_string) {
   auto query = Database::Query(R"sql(select "field value" id)sql", m_conn);
   query.execute();
 
-  ASSERT_EQ(query.get<std::string>("id"), "field value");
+  EXPECT_EQ(query.get<std::string>("id"), "field value");
 }
 
 } // namespace
