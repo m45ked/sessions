@@ -10,7 +10,7 @@ TEST(ConnectionTests, createDefaultConnection) {
 }
 
 TEST(ConnectionTests, createConnectionWithString) {
-  auto conn = Database::Connection("temp.db3");
+  { auto conn = Database::Connection("temp.db3"); }
   std::filesystem::remove("temp.db3");
 }
 
