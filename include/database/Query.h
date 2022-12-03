@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cassert>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -25,7 +26,7 @@ public:
       return getString(fieldName);
 
     assert(std::is_trivially_constructible_v<ValueT>);
-    return ValueT{};
+    return {};
   }
 
 private:
