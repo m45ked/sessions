@@ -1,8 +1,8 @@
 #include "database/Connection.h"
 #include "database/Exceptions.h"
 #include "database/Query.h"
-#include "gtest/gtest.h"
 #include "fmt/format.h"
+#include "gtest/gtest.h"
 
 namespace {
 
