@@ -33,6 +33,7 @@ public:
   std::string getString(const std::string_view &fieldName) const;
   double getDouble(const std::string_view &fieldName) const;
   int64_t getInteger(const std::string_view &fieldName) const;
+  const void *getBlob(const std::string_view &fieldName) const;
 
   void execute();
 
@@ -87,6 +88,12 @@ std::string Query::Impl::getString(const std::string_view &fieldName) const {
   return {reinterpret_cast<const char *>(text), length};
 }
 
+const void* Query::Impl::getBlob(const std::string_view& fieldName) const {
+  const auto index = getIndex(fieldName);
+  const auto value = sqlite3_column_blob(m_dbStatement.get(), index);
+  return value;
+}
+
 int Query::Impl::getIndex(const std::string_view &fieldName) const {
   const auto beginIt = begin(m_columns);
   const auto it = find(beginIt, end(m_columns), fieldName);
@@ -109,6 +116,10 @@ double Query::getDouble(const std::string_view &fieldName) {
 
 std::string Query::getString(const std::string_view &fieldName) {
   return m_impl->getString(fieldName);
+}
+
+const void* Query::getBlob(const std::string_view& fieldName) {
+  return m_impl->getBlob(fieldName);
 }
 
 } // namespace Database

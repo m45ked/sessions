@@ -2,6 +2,7 @@
 #include "database/Exceptions.h"
 #include "database/Query.h"
 #include "gtest/gtest.h"
+#include "fmt/format.h"
 
 namespace {
 
@@ -39,6 +40,13 @@ TEST_F(QueryTest, getColumnValue_string) {
   query.execute();
 
   EXPECT_EQ(query.get<std::string>("id"), "field value");
+}
+
+TEST_F(QueryTest, getColumnValue_blob) {
+  auto query = Database::Query(R"sql(select randomblob(16) id)sql", m_conn);
+  query.execute();
+  auto f = reinterpret_cast<const char *>(query.get<const void *>("id"));
+  // fmt::print(R"log(value: {:s})log", f); // 4 DEBUG
 }
 
 } // namespace

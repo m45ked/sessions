@@ -24,6 +24,8 @@ public:
       return getDouble(fieldName);
     else if constexpr (std::is_same_v<ValueT, std::string>)
       return getString(fieldName);
+    else if constexpr (std::is_same_v<ValueT, const void *>)
+      return getBlob(fieldName);
 
     assert(std::is_trivially_constructible_v<ValueT>);
     return {};
@@ -33,6 +35,7 @@ private:
   double getDouble(const std::string_view &field);
   int64_t getInteger(const std::string_view &field);
   std::string getString(const std::string_view &field);
+  const void * getBlob(const std::string_view &field);
 
   class Impl;
   friend class Impl;
