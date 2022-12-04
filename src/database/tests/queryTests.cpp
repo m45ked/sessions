@@ -45,8 +45,11 @@ TEST_F(QueryTest, getColumnValue_string) {
 TEST_F(QueryTest, getColumnValue_blob) {
   auto query = Database::Query(R"sql(select randomblob(16) id)sql", m_conn);
   query.execute();
-  auto f = reinterpret_cast<const char *>(query.get<const void *>("id"));
-  // fmt::print(R"log(value: {:s})log", f); // 4 DEBUG
+  auto f =
+      std::string{static_cast<const char *>(query.get<const void *>("id"))};
+  EXPECT_NE(f.length(), 0);
+  // TODO: Po umo¿liwieniu Query::set<const void *> zmieniæ ten test,
+  // aby rzeczywiœcie testowa³ pobieranie
 }
 
 } // namespace
