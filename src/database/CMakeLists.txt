@@ -5,6 +5,11 @@ add_library(sqlite_ext STATIC
 )
 target_include_directories(sqlite_ext PUBLIC sqlite)
 
+if (UNIX AND (CMAKE_COMPILER_IS_GNUCXX OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang"))
+  set_target_properties(sqlite_ext PROPERTIES COMPILE_FLAGS "-fPIC")
+endif()
+
+
 add_library(database
     Connection.cpp
     Query.cpp
