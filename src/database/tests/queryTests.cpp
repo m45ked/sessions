@@ -3,6 +3,7 @@
 #include "database/Query.h"
 #include "fmt/format.h"
 #include "gtest/gtest.h"
+#include <sys/_types/_int64_t.h>
 
 namespace {
 
@@ -25,7 +26,7 @@ TEST_F(QueryTest, getColumnValue_int) {
   auto query = Database::Query(R"sql(select 1 id)sql", m_conn);
   query.execute();
 
-  EXPECT_EQ(query.get<int>("id"), 1);
+  EXPECT_EQ(query.get<int64_t>("id"), 1);
 }
 
 TEST_F(QueryTest, getColumnValue_double) {
@@ -48,8 +49,8 @@ TEST_F(QueryTest, getColumnValue_blob) {
   auto f =
       std::string{static_cast<const char *>(query.get<const void *>("id"))};
   EXPECT_NE(f.length(), 0);
-  // TODO: Po umo¿liwieniu Query::set<const void *> zmieniæ ten test,
-  // aby rzeczywiœcie testowa³ pobieranie
+  // TODO: Po umoï¿½liwieniu Query::set<const void *> zmieniï¿½ ten test,
+  // aby rzeczywiï¿½cie testowaï¿½ pobieranie
 }
 
 } // namespace

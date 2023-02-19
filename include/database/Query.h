@@ -4,6 +4,7 @@
 #include <memory>
 #include <string>
 #include <string_view>
+#include <sys/_types/_int64_t.h>
 #include <type_traits>
 
 #include "database/Connection_fwd.h"
@@ -15,9 +16,9 @@ namespace Database {
 class DATABASE_EXPORT Query {
 public:
   Query(const std::string_view &sql, Connection &connection);
-  void execute();
-  template <typename ValueT>
-  inline ValueT get(const std::string_view &fieldName) {
+  auto execute() -> void;
+
+  template <typename ValueT> ValueT get(const std::string_view &fieldName) {
     if constexpr (std::is_integral_v<ValueT>)
       return getInteger(fieldName);
     else if constexpr (std::is_floating_point_v<ValueT>)
@@ -32,10 +33,10 @@ public:
   }
 
 private:
-  double getDouble(const std::string_view &field);
-  int64_t getInteger(const std::string_view &field);
-  std::string getString(const std::string_view &field);
-  const void * getBlob(const std::string_view &field);
+  auto getDouble(const std::string_view &field) -> double;
+  auto getInteger(const std::string_view &field) -> int64_t;
+  auto getString(const std::string_view &field) -> std::string;
+  auto getBlob(const std::string_view &field) -> const void *const;
 
   class Impl;
   friend class Impl;
