@@ -3,6 +3,6 @@ add_executable(DatabaseTests
   queryTests.cpp)
 target_link_libraries(DatabaseTests
   database
-  GTest::gtest_main
+  gmock_main
 )
 gtest_discover_tests(DatabaseTests)

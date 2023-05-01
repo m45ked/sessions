@@ -1,11 +1,13 @@
 #pragma once
 
 #include <cassert>
+#include <cstddef>
 #include <memory>
 #include <string>
 #include <string_view>
 #include <sys/_types/_int64_t.h>
 #include <type_traits>
+#include <vector>
 
 #include "database/Connection_fwd.h"
 #include "database/Query_fwd.h"
@@ -25,7 +27,7 @@ public:
       return getDouble(fieldName);
     else if constexpr (std::is_same_v<ValueT, std::string>)
       return getString(fieldName);
-    else if constexpr (std::is_same_v<ValueT, const void *>)
+    else if constexpr (std::is_assignable_v<ValueT, std::vector<std::byte> >)
       return getBlob(fieldName);
 
     assert(std::is_trivially_constructible_v<ValueT>);
@@ -36,7 +38,7 @@ private:
   auto getDouble(const std::string_view &field) -> double;
   auto getInteger(const std::string_view &field) -> int64_t;
   auto getString(const std::string_view &field) -> std::string;
-  auto getBlob(const std::string_view &field) -> const void *const;
+  auto getBlob(const std::string_view &field) -> std::vector<std::byte>;
 
   class Impl;
   friend class Impl;
