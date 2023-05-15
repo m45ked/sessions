@@ -2,10 +2,10 @@
 
 #include <cassert>
 #include <cstddef>
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <string_view>
-#include <cstdint>
 #include <type_traits>
 #include <vector>
 
@@ -27,7 +27,7 @@ public:
       return getDouble(fieldName);
     else if constexpr (std::is_same_v<ValueT, std::string>)
       return getString(fieldName);
-    else if constexpr (std::is_assignable_v<ValueT, std::vector<std::byte> >)
+    else if constexpr (std::is_assignable_v<ValueT, std::vector<std::byte>>)
       return getBlob(fieldName);
 
     assert(std::is_trivially_constructible_v<ValueT>);
