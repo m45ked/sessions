@@ -5,7 +5,7 @@
 #include <memory>
 #include <string>
 #include <string_view>
-#include <sys/_types/_int64_t.h>
+#include <cstdint>
 #include <type_traits>
 #include <vector>
 
