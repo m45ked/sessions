@@ -1,12 +1,9 @@
 #pragma once
 
 #include <cassert>
-<<<<<<< HEAD
-#include <inttypes.h>
-=======
+#include <cinttypes>
 #include <cstddef>
 #include <cstdint>
->>>>>>> 3b8488231d3ea389ca068973b2eeeede242375f7
 #include <memory>
 #include <string>
 #include <string_view>

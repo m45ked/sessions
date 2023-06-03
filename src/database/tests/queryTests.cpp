@@ -1,4 +1,5 @@
 #include "gmock/gmock.h"
+#include <cinttypes>
 #include <cstdint>
 #include <vector>
 
@@ -9,10 +10,6 @@
 #include "gmock/gmock-more-matchers.h"
 #include "gtest/gtest-matchers.h"
 #include "gtest/gtest.h"
-<<<<<<< HEAD
-#include <inttypes.h>
-=======
->>>>>>> 3b8488231d3ea389ca068973b2eeeede242375f7
 
 namespace {
 
