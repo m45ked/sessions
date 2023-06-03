@@ -1,7 +1,7 @@
 #pragma once
 
 #include <cassert>
-#include <inttypes.h>
+#include <cinttypes>
 #include <memory>
 #include <string>
 #include <string_view>

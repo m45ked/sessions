@@ -1,5 +1,7 @@
 #include <algorithm>
 #include <inttypes.h>
+#include <cinttypes>
+#include <cstddef>
 #include <iostream>
 #include <locale>
 #include <string>

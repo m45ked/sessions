@@ -16,4 +16,4 @@ add_library(database
 )
 target_link_libraries(database sqlite_ext fmt::fmt)
 generate_export_header(database)
-install(TARGETS database DESTINATION ${LIBRARY_INSTALL_DIR})
+# install(TARGETS database DESTINATION ${LIBRARY_INSTALL_DIR})
