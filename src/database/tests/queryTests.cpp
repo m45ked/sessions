@@ -1,9 +1,15 @@
+#include "gmock/gmock.h"
+#include <cstdint>
+#include <inttypes.h>
+#include <vector>
+
 #include "database/Connection.h"
 #include "database/Exceptions.h"
 #include "database/Query.h"
 #include "fmt/format.h"
+#include "gmock/gmock-more-matchers.h"
+#include "gtest/gtest-matchers.h"
 #include "gtest/gtest.h"
-#include <inttypes.h>
 
 namespace {
 
@@ -46,11 +52,10 @@ TEST_F(QueryTest, getColumnValue_string) {
 TEST_F(QueryTest, getColumnValue_blob) {
   auto query = Database::Query(R"sql(select randomblob(16) id)sql", m_conn);
   query.execute();
-  auto f =
-      std::string{static_cast<const char *>(query.get<const void *>("id"))};
-  EXPECT_NE(f.length(), 0);
-  // TODO: Po umo�liwieniu Query::set<const void *> zmieni� ten test,
-  // aby rzeczywi�cie testowa� pobieranie
+  auto f = query.get<std::vector<std::byte>>("id");
+  const auto defaultValue = std::vector<std::byte>{16ul};
+  EXPECT_THAT(f, ::testing::Not(::testing::Eq(defaultValue)));
+  EXPECT_THAT(f.size(), ::testing::Eq(defaultValue.size()));
 }
 
 } // namespace
