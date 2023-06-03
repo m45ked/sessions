@@ -1,5 +1,10 @@
 #include <algorithm>
+<<<<<<< HEAD
 #include <inttypes.h>
+=======
+#include <cinttypes>
+#include <cstddef>
+>>>>>>> 3b8488231d3ea389ca068973b2eeeede242375f7
 #include <iostream>
 #include <locale>
 #include <string>
@@ -35,7 +40,8 @@ public:
   auto getString(const std::string_view &fieldName) const -> std::string;
   auto getDouble(const std::string_view &fieldName) const -> double;
   auto getInteger(const std::string_view &fieldName) const -> int64_t;
-  auto getBlob(const std::string_view &fieldName) const -> const void *const;
+  auto getBlob(const std::string_view &fieldName) const
+      -> std::vector<std::byte>;
 
   auto execute() -> void;
 
@@ -92,11 +98,19 @@ auto Query::Impl::getString(const std::string_view &fieldName) const
   return {reinterpret_cast<const char *>(text), length};
 }
 
-auto Query::Impl::getBlob(const std::string_view &fieldName) const -> const
-    void *const {
+auto Query::Impl::getBlob(const std::string_view &fieldName) const
+    -> std::vector<std::byte> {
   const auto index = getIndex(fieldName);
-  const auto value = sqlite3_column_blob(m_dbStatement.get(), index);
-  return value;
+  const auto value = static_cast<const char *>(
+      sqlite3_column_blob(m_dbStatement.get(), index));
+  const auto length = sqlite3_column_bytes(m_dbStatement.get(), index);
+  auto vec = std::vector<std::byte>{static_cast<unsigned long>(length)};
+
+  for (size_t i = 0; i < length; ++i) {
+    vec[i] = std::byte(*(value + i));
+  }
+
+  return vec;
 }
 
 auto Query::Impl::getIndex(const std::string_view &fieldName) const -> int64_t {
@@ -123,7 +137,8 @@ auto Query::getString(const std::string_view &fieldName) -> std::string {
   return m_impl->getString(fieldName);
 }
 
-auto Query::getBlob(const std::string_view &fieldName) -> const void *const {
+auto Query::getBlob(const std::string_view &fieldName)
+    -> std::vector<std::byte> {
   return m_impl->getBlob(fieldName);
 }
 
