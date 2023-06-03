@@ -11,6 +11,7 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/output)
 
 include(GenerateExportHeader)
 include(FetchContent)
+find_package(Threads)
 
 FetchContent_Declare(
   googletest

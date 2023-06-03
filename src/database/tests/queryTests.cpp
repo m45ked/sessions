@@ -3,7 +3,7 @@
 #include "database/Query.h"
 #include "fmt/format.h"
 #include "gtest/gtest.h"
-#include <sys/_types/_int64_t.h>
+#include <inttypes.h>
 
 namespace {
 

@@ -1,11 +1,12 @@
 #pragma once
 
 #include <cassert>
+#include <inttypes.h>
 #include <memory>
 #include <string>
 #include <string_view>
-#include <sys/_types/_int64_t.h>
 #include <type_traits>
+
 
 #include "database/Connection_fwd.h"
 #include "database/Query_fwd.h"
