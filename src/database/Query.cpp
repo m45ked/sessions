@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <cinttypes>
 #include <cstddef>
+#include <cstdint>
 #include <iostream>
 #include <locale>
 #include <string>
@@ -33,17 +34,11 @@ class Query::Impl {
 public:
   Impl(const std::string_view &sql, sqlite3 *dbConnection);
 
-  auto getString(const std::string_view &fieldName) const -> std::string;
-  auto getDouble(const std::string_view &fieldName) const -> double;
-  auto getInteger(const std::string_view &fieldName) const -> int64_t;
-  auto getBlob(const std::string_view &fieldName) const
-      -> std::vector<std::byte>;
-
   auto execute() -> void;
+  auto getIndex(const std::string_view &fieldName) const -> int64_t;
+  auto getStatement() const -> sqlite3_stmt *;
 
 private:
-  auto getIndex(const std::string_view &fieldName) const -> int64_t;
-
   std::shared_ptr<sqlite3_stmt> m_dbStatement;
   std::vector<std::string> m_columns;
 };
@@ -75,44 +70,14 @@ auto Query::Impl::execute() -> void {
   }
 }
 
-auto Query::Impl::getInteger(const std::string_view &fieldName) const
-    -> int64_t {
-  const auto index = getIndex(fieldName);
-  return sqlite3_column_int64(m_dbStatement.get(), index);
-}
-
-auto Query::Impl::getDouble(const std::string_view &fieldName) const -> double {
-  const auto index = getIndex(fieldName);
-  return sqlite3_column_double(m_dbStatement.get(), index);
-}
-
-auto Query::Impl::getString(const std::string_view &fieldName) const
-    -> std::string {
-  const auto index = getIndex(fieldName);
-  const auto text = sqlite3_column_text(m_dbStatement.get(), index);
-  const std::size_t length = sqlite3_column_bytes(m_dbStatement.get(), index);
-  return {reinterpret_cast<const char *>(text), length};
-}
-
-auto Query::Impl::getBlob(const std::string_view &fieldName) const
-    -> std::vector<std::byte> {
-  const auto index = getIndex(fieldName);
-  const auto value = static_cast<const char *>(
-      sqlite3_column_blob(m_dbStatement.get(), index));
-  const auto length = sqlite3_column_bytes(m_dbStatement.get(), index);
-  auto vec = std::vector<std::byte>{static_cast<unsigned long>(length)};
-
-  for (size_t i = 0; i < length; ++i) {
-    vec[i] = std::byte(*(value + i));
-  }
-
-  return vec;
-}
-
 auto Query::Impl::getIndex(const std::string_view &fieldName) const -> int64_t {
   const auto beginIt = begin(m_columns);
   const auto it = find(beginIt, end(m_columns), fieldName);
   return distance(beginIt, it);
+}
+
+auto Query::Impl::getStatement() const -> sqlite3_stmt * {
+  return m_dbStatement.get();
 }
 
 Query::Query(const std::string_view &sql, Connection &connection)
@@ -121,21 +86,37 @@ Query::Query(const std::string_view &sql, Connection &connection)
 
 auto Query::execute() -> void { m_impl->execute(); }
 
-auto Query::getInteger(const std::string_view &fieldName) -> int64_t {
-  return m_impl->getInteger(fieldName);
+template <> auto getFromQuery<double>(sqlite3_stmt *stmt, int idx) -> double {
+  return sqlite3_column_double(stmt, idx);
 }
 
-auto Query::getDouble(const std::string_view &fieldName) -> double {
-  return m_impl->getDouble(fieldName);
+template <> auto getFromQuery<int64_t>(sqlite3_stmt *stmt, int idx) -> int64_t {
+  return sqlite3_column_int64(stmt, idx);
 }
 
-auto Query::getString(const std::string_view &fieldName) -> std::string {
-  return m_impl->getString(fieldName);
+template <> auto getFromQuery(sqlite3_stmt *stmt, int idx) -> std::string {
+  const auto text = sqlite3_column_text(stmt, idx);
+  const std::size_t length = sqlite3_column_bytes(stmt, idx);
+  return {reinterpret_cast<const char *>(text), length};
 }
 
-auto Query::getBlob(const std::string_view &fieldName)
-    -> std::vector<std::byte> {
-  return m_impl->getBlob(fieldName);
+template <>
+auto getFromQuery(sqlite3_stmt *stmt, int idx) -> std::vector<std::byte> {
+  const auto value = static_cast<const char *>(sqlite3_column_blob(stmt, idx));
+  const auto length = sqlite3_column_bytes(stmt, idx);
+  auto vec = std::vector<std::byte>{static_cast<unsigned long>(length)};
+
+  for (size_t i = 0; i < length; ++i) {
+    vec[i] = static_cast<std::byte>(*(value + i));
+  }
+
+  return vec;
 }
+
+int Query::getColumnIdxFromStatement(const std::string_view &fieldName) {
+  return m_impl->getIndex(fieldName);
+}
+
+sqlite3_stmt *Query::getRawStatement() const { return m_impl->getStatement(); }
 
 } // namespace Database

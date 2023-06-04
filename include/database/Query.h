@@ -14,33 +14,25 @@
 #include "database/Connection_fwd.h"
 #include "database/Query_fwd.h"
 #include "database/database_export.h"
+#include "sqlite3.h"
 
 namespace Database {
+
+template<typename ValueT> auto getFromQuery(sqlite3_stmt* stmt, int idx) -> ValueT;
 
 class DATABASE_EXPORT Query {
 public:
   Query(const std::string_view &sql, Connection &connection);
   auto execute() -> void;
 
-  template <typename ValueT> ValueT get(const std::string_view &fieldName) {
-    if constexpr (std::is_integral_v<ValueT>)
-      return getInteger(fieldName);
-    else if constexpr (std::is_floating_point_v<ValueT>)
-      return getDouble(fieldName);
-    else if constexpr (std::is_same_v<ValueT, std::string>)
-      return getString(fieldName);
-    else if constexpr (std::is_assignable_v<ValueT, std::vector<std::byte>>)
-      return getBlob(fieldName);
-
-    assert(std::is_trivially_constructible_v<ValueT>);
-    return {};
+  template <typename ValueT> ValueT get(const std::string_view &fieldName)
+  {
+    return getFromQuery<ValueT>(getRawStatement(), getColumnIdxFromStatement(fieldName));
   }
 
 private:
-  auto getDouble(const std::string_view &field) -> double;
-  auto getInteger(const std::string_view &field) -> int64_t;
-  auto getString(const std::string_view &field) -> std::string;
-  auto getBlob(const std::string_view &field) -> std::vector<std::byte>;
+  sqlite3_stmt* getRawStatement() const;
+  int getColumnIdxFromStatement(const std::string_view& fieldName);
 
   class Impl;
   friend class Impl;
