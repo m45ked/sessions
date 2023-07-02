@@ -23,6 +23,8 @@ template<typename ValueT> auto getFromQuery(sqlite3_stmt* stmt, int idx) -> Valu
 class DATABASE_EXPORT Query {
 public:
   Query(const std::string_view &sql, Connection &connection);
+  virtual ~Query();
+
   auto execute() -> void;
 
   template <typename ValueT> ValueT get(const std::string_view &fieldName)
@@ -35,8 +37,7 @@ private:
   int getColumnIdxFromStatement(const std::string_view& fieldName);
 
   class Impl;
-  friend class Impl;
-  std::shared_ptr<Impl> m_impl;
+  std::unique_ptr<Impl> m_impl;
 };
 
 } // namespace Database

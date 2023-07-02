@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <iostream>
 #include <locale>
+#include <memory>
 #include <string>
 #include <string_view>
 #include <type_traits>
@@ -26,9 +27,17 @@ auto getLowerCaseString(const std::string_view &text) -> std::string {
   return lowercaseName;
 }
 
+struct statement_deleter {
+  void operator()(sqlite3_stmt *statement) {
+    const auto rc = sqlite3_finalize(statement);
+  }
+};
+
 } // namespace
 
 namespace Database {
+
+Query::~Query() {}
 
 class Query::Impl {
 public:
@@ -39,7 +48,7 @@ public:
   auto getStatement() const -> sqlite3_stmt *;
 
 private:
-  std::shared_ptr<sqlite3_stmt> m_dbStatement;
+  std::unique_ptr<sqlite3_stmt, statement_deleter> m_dbStatement;
   std::vector<std::string> m_columns;
 };
 
@@ -48,7 +57,8 @@ Query::Impl::Impl(const std::string_view &sql, sqlite3 *dbConnection) {
   sqlite3_stmt *statement;
   const auto result = sqlite3_prepare_v2(dbConnection, sql.data(), sql.size(),
                                          &statement, &outSql);
-  m_dbStatement = {statement, &sqlite3_finalize};
+  m_dbStatement =
+      std::unique_ptr<sqlite3_stmt, statement_deleter>(std::move(statement));
   if (result != SQLITE_OK) {
     throw IncorrectQuerySql(sql);
   }
@@ -81,8 +91,7 @@ auto Query::Impl::getStatement() const -> sqlite3_stmt * {
 }
 
 Query::Query(const std::string_view &sql, Connection &connection)
-    : m_impl(
-          std::make_shared<Query::Impl>(sql, connection.getRawConnection())) {}
+    : m_impl(std::make_unique<Impl>(sql, connection.getRawConnection())) {}
 
 auto Query::execute() -> void { m_impl->execute(); }
 
