@@ -28,7 +28,7 @@ auto getLowerCaseString(const std::string_view &text) -> std::string {
 }
 
 struct statement_deleter {
-  void operator()(sqlite3_stmt *statement) {
+  auto operator()(sqlite3_stmt *statement) -> void {
     const auto rc = sqlite3_finalize(statement);
   }
 };
