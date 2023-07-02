@@ -49,9 +49,8 @@ if(NOT googletest_POPULATED)
 endif()
 find_package(Threads REQUIRED) # for pthread
 
-
-include_directories("${CMAKE_SOURCE_DIR}/include")
 include_directories("${CMAKE_BINARY_DIR}/src")
+include_directories("${CMAKE_SOURCE_DIR}/src")
 
 enable_testing()
 include(GoogleTest)

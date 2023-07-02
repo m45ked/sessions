@@ -1,3 +1,5 @@
+#include "Query.h"
+
 #include <algorithm>
 #include <cinttypes>
 #include <cstddef>
@@ -16,7 +18,6 @@
 
 #include "database/Connection.h"
 #include "database/Exceptions.h"
-#include "database/Query.h"
 
 namespace {
 
