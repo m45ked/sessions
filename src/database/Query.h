@@ -27,7 +27,7 @@ public:
 
   auto execute() -> void;
 
-  template <typename ValueT> ValueT get(const std::string_view &fieldName)
+  template <typename ValueT> auto get(const std::string_view &fieldName) -> ValueT
   {
     return getFromQuery<ValueT>(getRawStatement(), getColumnIdxFromStatement(fieldName));
   }
