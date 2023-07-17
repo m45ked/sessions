@@ -13,7 +13,7 @@ namespace Database {
 class DATABASE_EXPORT Connection {
 public:
   Connection();
-  Connection(const std::string_view &connectionString);
+  explicit Connection(const std::string_view &connectionString);
 
 private:
   class Impl;
