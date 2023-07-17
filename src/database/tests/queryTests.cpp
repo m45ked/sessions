@@ -1,4 +1,3 @@
-#include "gmock/gmock.h"
 #include <cinttypes>
 #include <cstdint>
 #include <vector>
@@ -8,6 +7,7 @@
 #include "database/Query.h"
 #include "fmt/format.h"
 #include "gmock/gmock-more-matchers.h"
+#include "gmock/gmock.h"
 #include "gtest/gtest-matchers.h"
 #include "gtest/gtest.h"
 

@@ -10,7 +10,6 @@
 #include <type_traits>
 #include <vector>
 
-
 #include "database/Connection_fwd.h"
 #include "database/Query_fwd.h"
 #include "database/database_export.h"
@@ -18,7 +17,8 @@
 
 namespace Database {
 
-template<typename ValueT> auto getFromQuery(sqlite3_stmt* stmt, int idx) -> ValueT;
+template <typename ValueT>
+auto getFromQuery(sqlite3_stmt *stmt, int idx) -> ValueT;
 
 class DATABASE_EXPORT Query {
 public:
@@ -27,14 +27,15 @@ public:
 
   auto execute() -> void;
 
-  template <typename ValueT> auto get(const std::string_view &fieldName) -> ValueT
-  {
-    return getFromQuery<ValueT>(getRawStatement(), getColumnIdxFromStatement(fieldName));
+  template <typename ValueT>
+  auto get(const std::string_view &fieldName) -> ValueT {
+    return getFromQuery<ValueT>(getRawStatement(),
+                                getColumnIdxFromStatement(fieldName));
   }
 
 private:
-  sqlite3_stmt* getRawStatement() const;
-  int getColumnIdxFromStatement(const std::string_view& fieldName);
+  sqlite3_stmt *getRawStatement() const;
+  int getColumnIdxFromStatement(const std::string_view &fieldName);
 
   class Impl;
   std::unique_ptr<Impl> m_impl;
