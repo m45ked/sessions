@@ -13,17 +13,18 @@ namespace Database {
 class DATABASE_EXPORT Connection {
 public:
   Connection();
+  virtual ~Connection();
   explicit Connection(const std::string_view &connectionString);
 
 private:
   class Impl;
-  friend class Impl;
 
+  friend class Impl;
   friend class Query;
 
   sqlite3 *getRawConnection() const;
 
-  std::shared_ptr<Impl> m_impl;
+  std::unique_ptr<Impl> m_impl;
 };
 
 } // namespace Database

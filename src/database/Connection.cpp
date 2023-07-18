@@ -1,5 +1,6 @@
 #include "Connection.h"
 
+#include <memory>
 #include <string_view>
 
 #include "fmt/format.h"
@@ -52,10 +53,12 @@ sqlite3 *Connection::Impl::getRawConnection() const {
   return m_dbConnection.get();
 }
 
-Connection::Connection() : m_impl(std::make_shared<Connection::Impl>()) {}
+Connection::Connection() : m_impl(std::make_unique<Impl>()) {}
+
+Connection::~Connection() {}
 
 Connection::Connection(const std::string_view &connectionString)
-    : m_impl(std::make_shared<Connection::Impl>(connectionString)) {}
+    : m_impl(std::make_unique<Impl>(connectionString)) {}
 
 sqlite3 *Connection::getRawConnection() const {
   return m_impl->getRawConnection();
