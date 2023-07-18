@@ -11,8 +11,8 @@
 
 namespace {
 
-sqlite3 *createConnection(const std::string_view &connectionString,
-                          const int customFlags = 0) {
+auto createConnection(const std::string_view &connectionString,
+                      const int customFlags = 0) -> sqlite3 * {
   const auto flags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | customFlags;
   sqlite3 *connection;
   const auto result =
@@ -57,7 +57,7 @@ Connection::Impl::Impl()
     : m_dbConnection(
           std::move(createConnection(":memory:", SQLITE_OPEN_MEMORY))) {}
 
-sqlite3 *Connection::Impl::getRawConnection() const {
+auto Connection::Impl::getRawConnection() const -> sqlite3 * {
   return m_dbConnection.get();
 }
 
@@ -68,7 +68,7 @@ Connection::~Connection() {}
 Connection::Connection(const std::string_view &connectionString)
     : m_impl(std::make_unique<Impl>(connectionString)) {}
 
-sqlite3 *Connection::getRawConnection() const {
+auto Connection::getRawConnection() const -> sqlite3 * {
   return m_impl->getRawConnection();
 }
 
