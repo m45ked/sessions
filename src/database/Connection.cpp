@@ -25,6 +25,12 @@ sqlite3 *createConnection(const std::string_view &connectionString,
   return connection;
 }
 
+struct connection_deleter {
+  auto operator()(sqlite3 *ptr) -> void {
+    [[maybe_unused]] const auto rc = sqlite3_close(ptr);
+  }
+};
+
 } // namespace
 
 namespace Database {
@@ -34,20 +40,22 @@ public:
   Impl(const std::string_view &connectionString);
   Impl();
 
+  virtual ~Impl();
+
   sqlite3 *getRawConnection() const;
 
 private:
-  std::shared_ptr<sqlite3> m_dbConnection;
+  std::unique_ptr<sqlite3, connection_deleter> m_dbConnection;
 };
 
-Connection::Impl::Impl(const std::string_view &connectionString) {
-  m_dbConnection = {createConnection(connectionString), &sqlite3_close};
-}
+Connection::Impl::~Impl() {}
 
-Connection::Impl::Impl() {
-  m_dbConnection = {createConnection(":memory:", SQLITE_OPEN_MEMORY),
-                    &sqlite3_close};
-}
+Connection::Impl::Impl(const std::string_view &connectionString)
+    : m_dbConnection(std::move(createConnection(connectionString))) {}
+
+Connection::Impl::Impl()
+    : m_dbConnection(
+          std::move(createConnection(":memory:", SQLITE_OPEN_MEMORY))) {}
 
 sqlite3 *Connection::Impl::getRawConnection() const {
   return m_dbConnection.get();
