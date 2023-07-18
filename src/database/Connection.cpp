@@ -33,7 +33,7 @@ public:
   Impl(const std::string_view &connectionString);
   Impl();
 
-  sqlite3 *getRawConnection();
+  sqlite3 *getRawConnection() const;
 
 private:
   std::shared_ptr<sqlite3> m_dbConnection;
@@ -48,13 +48,17 @@ Connection::Impl::Impl() {
                     &sqlite3_close};
 }
 
-sqlite3 *Connection::Impl::getRawConnection() { return m_dbConnection.get(); }
+sqlite3 *Connection::Impl::getRawConnection() const {
+  return m_dbConnection.get();
+}
 
 Connection::Connection() : m_impl(std::make_shared<Connection::Impl>()) {}
 
 Connection::Connection(const std::string_view &connectionString)
     : m_impl(std::make_shared<Connection::Impl>(connectionString)) {}
 
-sqlite3 *Connection::getRawConnection() { return m_impl->getRawConnection(); }
+sqlite3 *Connection::getRawConnection() const {
+  return m_impl->getRawConnection();
+}
 
 } // namespace Database

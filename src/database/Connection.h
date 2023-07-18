@@ -21,7 +21,7 @@ private:
 
   friend class Query;
 
-  sqlite3 *getRawConnection();
+  sqlite3 *getRawConnection() const;
 
   std::shared_ptr<Impl> m_impl;
 };
