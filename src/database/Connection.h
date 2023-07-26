@@ -22,7 +22,7 @@ private:
   friend class Impl;
   friend class Query;
 
-  auto etRawConnection() const -> sqlite3 *;
+  auto getRawConnection() const -> sqlite3 *;
 
   std::unique_ptr<Impl> m_impl;
 };
