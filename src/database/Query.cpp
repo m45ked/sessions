@@ -70,9 +70,7 @@ auto Query::Impl::execute() -> void {
   while (sqlite3_step(stmt) != SQLITE_ROW) {
   }
 
-  const auto sql = sqlite3_expanded_sql(stmt);
-  std::cout << fmt::format("Called \"{}\"\n", sql);
-  sqlite3_free(sql);
+  std::cout << fmt::format("Called \"{}\"\n", sqlite3_normalized_sql(stmt));
 
   const auto columnCount = sqlite3_column_count(stmt);
   for (auto i = 0; i < columnCount; ++i) {
