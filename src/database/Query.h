@@ -41,8 +41,7 @@ public:
 
   auto execute() -> void;
 
-  template <typename ValueT>
-  auto get(std::string_view fieldName) -> ValueT {
+  template <typename ValueT> auto get(std::string_view fieldName) -> ValueT {
     const auto stmt = getRawStatement();
     const auto idx = getColumnIdxFromStatement(fieldName);
     if constexpr (Core::type_traits::is_optional_v<ValueT>)
@@ -52,8 +51,8 @@ public:
   }
 
 private:
-  sqlite3_stmt *getRawStatement() const;
-  int getColumnIdxFromStatement(std::string_view fieldName) const;
+  auto getRawStatement() const -> sqlite3_stmt *;
+  auto getColumnIdxFromStatement(std::string_view fieldName) const -> int;
 
   class Impl;
   std::unique_ptr<Impl> m_impl;

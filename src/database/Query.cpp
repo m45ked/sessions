@@ -127,10 +127,12 @@ auto getFromQuery(sqlite3_stmt *stmt, int idx) -> std::vector<std::byte> {
 
 } // namespace detail
 
-int Query::getColumnIdxFromStatement(std::string_view fieldName) const {
+auto Query::getColumnIdxFromStatement(std::string_view fieldName) const -> int {
   return m_impl->getIndex(fieldName);
 }
 
-sqlite3_stmt *Query::getRawStatement() const { return m_impl->getStatement(); }
+auto Query::getRawStatement() const -> sqlite3_stmt * {
+  return m_impl->getStatement();
+}
 
 } // namespace Database
