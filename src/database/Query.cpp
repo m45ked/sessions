@@ -21,7 +21,7 @@
 
 namespace {
 
-auto getLowerCaseString(const std::string_view &text) -> std::string {
+auto getLowerCaseString(std::string_view text) -> std::string {
   std::string lowercaseName = text.data();
   transform(begin(text), end(text), begin(lowercaseName),
             [=](const auto c) { return tolower(c, std::locale()); });
@@ -42,10 +42,10 @@ Query::~Query() {}
 
 class Query::Impl {
 public:
-  Impl(const std::string_view &sql, sqlite3 *dbConnection);
+  Impl(std::string_view sql, sqlite3 *dbConnection);
 
   auto execute() -> void;
-  auto getIndex(const std::string_view &fieldName) const -> int64_t;
+  auto getIndex(std::string_view fieldName) const -> int64_t;
   auto getStatement() const -> sqlite3_stmt *;
 
 private:
@@ -53,7 +53,7 @@ private:
   std::vector<std::string> m_columns;
 };
 
-Query::Impl::Impl(const std::string_view &sql, sqlite3 *dbConnection) {
+Query::Impl::Impl(std::string_view sql, sqlite3 *dbConnection) {
   const char *outSql;
   sqlite3_stmt *statement;
   const auto result = sqlite3_prepare_v2(dbConnection, sql.data(), sql.size(),
@@ -81,7 +81,7 @@ auto Query::Impl::execute() -> void {
   }
 }
 
-auto Query::Impl::getIndex(const std::string_view &fieldName) const -> int64_t {
+auto Query::Impl::getIndex(std::string_view fieldName) const -> int64_t {
   const auto beginIt = begin(m_columns);
   const auto it = find(beginIt, end(m_columns), fieldName);
   return distance(beginIt, it);
@@ -91,7 +91,7 @@ auto Query::Impl::getStatement() const -> sqlite3_stmt * {
   return m_dbStatement.get();
 }
 
-Query::Query(const std::string_view &sql, Connection &connection)
+Query::Query(std::string_view sql, Connection &connection)
     : m_impl(std::make_unique<Impl>(sql, connection.getRawConnection())) {}
 
 auto Query::execute() -> void { m_impl->execute(); }
@@ -128,7 +128,7 @@ auto getFromQuery(sqlite3_stmt *stmt, int idx) -> std::vector<std::byte> {
 
 } // namespace detail
 
-int Query::getColumnIdxFromStatement(const std::string_view &fieldName) {
+int Query::getColumnIdxFromStatement(std::string_view fieldName) {
   return m_impl->getIndex(fieldName);
 }
 

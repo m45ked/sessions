@@ -36,25 +36,24 @@ inline auto getOptionalFromQuery(sqlite3_stmt *stmt, int idx) -> ValueT {
 
 class DATABASE_EXPORT Query {
 public:
-  Query(const std::string_view &sql, Connection &connection);
+  Query(std::string_view sql, Connection &connection);
   virtual ~Query();
 
   auto execute() -> void;
 
   template <typename ValueT>
-  auto get(const std::string_view &fieldName) -> ValueT {
-    if constexpr (Core::type_traits::is_optional_v<ValueT>) {
-      return detail::getOptionalFromQuery<ValueT>(
-          getRawStatement(), getColumnIdxFromStatement(fieldName));
-    }
+  auto get(std::string_view fieldName) -> ValueT {
+    const auto stmt = getRawStatement();
+    const auto idx = getColumnIdxFromStatement(fieldName);
+    if constexpr (Core::type_traits::is_optional_v<ValueT>)
+      return detail::getOptionalFromQuery<ValueT>(stmt, idx);
 
-    return detail::getFromQuery<ValueT>(getRawStatement(),
-                                        getColumnIdxFromStatement(fieldName));
+    return detail::getFromQuery<ValueT>(stmt, idx);
   }
 
 private:
   sqlite3_stmt *getRawStatement() const;
-  int getColumnIdxFromStatement(const std::string_view &fieldName);
+  int getColumnIdxFromStatement(std::string_view fieldName);
 
   class Impl;
   std::unique_ptr<Impl> m_impl;

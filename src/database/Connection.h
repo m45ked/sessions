@@ -14,7 +14,7 @@ class DATABASE_EXPORT Connection {
 public:
   Connection();
   virtual ~Connection();
-  explicit Connection(const std::string_view &connectionString);
+  explicit Connection(std::string_view connectionString);
 
 private:
   class Impl;

@@ -11,7 +11,7 @@
 
 namespace {
 
-auto createConnection(const std::string_view &connectionString,
+auto createConnection(std::string_view connectionString,
                       const int customFlags = 0) -> sqlite3 * {
   const auto flags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | customFlags;
   sqlite3 *connection;
@@ -37,7 +37,7 @@ namespace Database {
 
 class Connection::Impl {
 public:
-  Impl(const std::string_view &connectionString);
+  Impl(std::string_view connectionString);
   Impl();
 
   virtual ~Impl();
@@ -50,7 +50,7 @@ private:
 
 Connection::Impl::~Impl() {}
 
-Connection::Impl::Impl(const std::string_view &connectionString)
+Connection::Impl::Impl(std::string_view connectionString)
     : m_dbConnection(std::move(createConnection(connectionString))) {}
 
 Connection::Impl::Impl()
@@ -65,7 +65,7 @@ Connection::Connection() : m_impl(std::make_unique<Impl>()) {}
 
 Connection::~Connection() {}
 
-Connection::Connection(const std::string_view &connectionString)
+Connection::Connection(std::string_view connectionString)
     : m_impl(std::make_unique<Impl>(connectionString)) {}
 
 auto Connection::getRawConnection() const -> sqlite3 * {
