@@ -12,9 +12,8 @@
 #include <type_traits>
 #include <vector>
 
+#include "fmt/core.h"
 #include "sqlite/sqlite3.h"
-
-#include "fmt/format.h"
 
 #include "database/Connection.h"
 #include "database/Exceptions.h"
@@ -70,13 +69,13 @@ auto Query::Impl::execute() -> void {
   while (sqlite3_step(stmt) != SQLITE_ROW) {
   }
 
-  std::cout << fmt::format("Called \"{}\"\n", sqlite3_normalized_sql(stmt));
+  fmt::print("Called \"{}\"\n", sqlite3_normalized_sql(stmt));
 
   const auto columnCount = sqlite3_column_count(stmt);
   for (auto i = 0; i < columnCount; ++i) {
     const auto name = getLowerCaseString({sqlite3_column_name(stmt, i)});
 
-    std::cout << fmt::format("Got column: '{}'\n", name);
+    fmt::print("Got column: '{}'\n", name);
     m_columns.emplace_back(name);
   }
 }
