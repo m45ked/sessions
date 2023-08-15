@@ -34,7 +34,7 @@ inline auto getOptionalFromQuery(sqlite3_stmt *stmt, int idx) -> ValueT {
 }
 
 template <typename ValueT>
-void bindParameterValue(sqlite3_stmt *stmt, int idx, const ValueT &value);
+auto bindParameterValue(sqlite3_stmt *stmt, int idx, const ValueT &value) -> void;
 
 } // namespace detail
 

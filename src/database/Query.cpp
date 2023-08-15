@@ -128,7 +128,7 @@ auto getFromQuery(sqlite3_stmt *stmt, int idx) -> std::vector<std::byte> {
 }
 
 template <>
-void bindParameterValue(sqlite3_stmt *stmt, int idx, const int &value) {
+auto bindParameterValue(sqlite3_stmt *stmt, int idx, const int &value) -> void {
   fmt::print("idx: {} value", idx);
   const auto val = sqlite3_bind_int64(stmt, idx, value); // TODO Błędne kody
   if (val != SQLITE_OK)
@@ -136,7 +136,8 @@ void bindParameterValue(sqlite3_stmt *stmt, int idx, const int &value) {
 }
 
 template <>
-void bindParameterValue(sqlite3_stmt *stmt, int idx, const double &value) {
+auto bindParameterValue(sqlite3_stmt *stmt, int idx, const double &value)
+    -> void {
   fmt::print("idx: {} value", idx);
   const auto val = sqlite3_bind_double(stmt, idx, value); // TODO Błędne kody
   if (val != SQLITE_OK)
@@ -144,7 +145,8 @@ void bindParameterValue(sqlite3_stmt *stmt, int idx, const double &value) {
 }
 
 template <>
-void bindParameterValue(sqlite3_stmt *stmt, int idx, const std::string &value) {
+auto bindParameterValue(sqlite3_stmt *stmt, int idx, const std::string &value)
+    -> void {
   fmt::print("idx: {} value", idx);
   const auto val = sqlite3_bind_text(stmt, idx, value.data(), value.size(),
                                      SQLITE_TRANSIENT); // TODO Błędne kody
