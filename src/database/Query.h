@@ -53,7 +53,7 @@ public:
 
 private:
   sqlite3_stmt *getRawStatement() const;
-  int getColumnIdxFromStatement(std::string_view fieldName);
+  int getColumnIdxFromStatement(std::string_view fieldName) const;
 
   class Impl;
   std::unique_ptr<Impl> m_impl;

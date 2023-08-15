@@ -96,8 +96,7 @@ Query::Query(std::string_view sql, Connection &connection)
 
 auto Query::execute() -> void { m_impl->execute(); }
 
-namespace detail
-{
+namespace detail {
 
 template <> auto getFromQuery<double>(sqlite3_stmt *stmt, int idx) -> double {
   return sqlite3_column_double(stmt, idx);
@@ -128,7 +127,7 @@ auto getFromQuery(sqlite3_stmt *stmt, int idx) -> std::vector<std::byte> {
 
 } // namespace detail
 
-int Query::getColumnIdxFromStatement(std::string_view fieldName) {
+int Query::getColumnIdxFromStatement(std::string_view fieldName) const {
   return m_impl->getIndex(fieldName);
 }
 
