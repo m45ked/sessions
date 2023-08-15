@@ -34,7 +34,19 @@ inline auto getOptionalFromQuery(sqlite3_stmt *stmt, int idx) -> ValueT {
 }
 
 template <typename ValueT>
-auto bindParameterValue(sqlite3_stmt *stmt, int idx, const ValueT &value) -> void;
+auto bindParameterValue(sqlite3_stmt *stmt, int idx, const ValueT &value)
+    -> void;
+
+template <typename ValueT> auto bindNullValue(sqlite3_stmt *stmt, int idx);
+
+template <typename ValueT>
+inline auto bindParameterOptionalValue(sqlite3_stmt *stmt, int idx,
+                                       const ValueT &value) -> void {
+  if (value)
+    bindParameterValue(stmt, idx, value.value());
+  else
+    sqlite3_bind_null(stmt, idx);
+}
 
 } // namespace detail
 
@@ -56,11 +68,14 @@ public:
 
   template <typename ValueT>
   void set(std::string_view fieldName, const ValueT &value) {
-    detail::bindParameterValue(
-        getRawStatement(),
-        sqlite3_bind_parameter_index(getRawStatement(),
-                                     fmt::format(":{}", fieldName).c_str()),
-        value);
+    const auto idx = sqlite3_bind_parameter_index(
+        getRawStatement(), fmt::format(":{}", fieldName).c_str());
+    const auto stmt = getRawStatement();
+
+    if constexpr (Core::type_traits::is_optional_v<ValueT>)
+      detail::bindParameterOptionalValue(stmt, idx, value);
+    else
+      detail::bindParameterValue(stmt, idx, value);
   }
 
 private:
