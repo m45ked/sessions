@@ -12,8 +12,9 @@
 #include <type_traits>
 #include <vector>
 
-#include "fmt/core.h"
 #include "sqlite/sqlite3.h"
+
+#include "spdlog/fmt/fmt.h"
 
 #include "database/Connection.h"
 #include "database/Exceptions.h"

@@ -15,6 +15,6 @@ add_library(database
     Connection.cpp
     Query.cpp
 )
-target_link_libraries(database sqlite_ext fmt::fmt)
+target_link_libraries(database sqlite_ext spdlog::spdlog)
 generate_export_header(database)
 # install(TARGETS database DESTINATION ${LIBRARY_INSTALL_DIR})
