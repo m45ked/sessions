@@ -26,8 +26,7 @@ TEST_F(QueryTest, createSimpleQuery) {
 }
 
 TEST_F(QueryTest, createIncorrectQuery) {
-  EXPECT_THROW(Q(R"sql(select)sql", m_conn),
-               Database::IncorrectQuerySql);
+  EXPECT_THROW(Q(R"sql(select)sql", m_conn), Database::IncorrectQuerySql);
 }
 
 TEST_F(QueryTest, getColumnValue_int) {
@@ -64,29 +63,32 @@ TEST_F(QueryTest, getColumnValue_optInt) {
   auto query = Q{R"sql(select null 'value')sql", m_conn};
   query.execute();
 
-  EXPECT_THAT(query.get<std::optional<int64_t>>("value"), ::testing::Eq(std::nullopt));
+  EXPECT_THAT(query.get<std::optional<int64_t>>("value"),
+              ::testing::Eq(std::nullopt));
 }
 
 TEST_F(QueryTest, getColumnValue_optString) {
   auto query = Q{R"sql(select null 'value')sql", m_conn};
   query.execute();
 
-  EXPECT_THAT(query.get<std::optional<std::string>>("value"), ::testing::Eq(std::nullopt));
+  EXPECT_THAT(query.get<std::optional<std::string>>("value"),
+              ::testing::Eq(std::nullopt));
 }
 
 TEST_F(QueryTest, getColumnValue_optDouble) {
   auto query = Q{R"sql(select null 'value')sql", m_conn};
   query.execute();
 
-  EXPECT_THAT(query.get<std::optional<double>>("value"), ::testing::Eq(std::nullopt));
+  EXPECT_THAT(query.get<std::optional<double>>("value"),
+              ::testing::Eq(std::nullopt));
 }
-
 
 TEST_F(QueryTest, getColumnValue_optBlob) {
   auto query = Q{R"sql(select null 'value')sql", m_conn};
   query.execute();
 
-  EXPECT_THAT(query.get<std::optional<std::vector<std::byte>>>("value"), ::testing::Eq(std::nullopt));
+  EXPECT_THAT(query.get<std::optional<std::vector<std::byte>>>("value"),
+              ::testing::Eq(std::nullopt));
 }
 
 } // namespace
