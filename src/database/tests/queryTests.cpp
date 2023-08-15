@@ -1,5 +1,6 @@
 #include <cinttypes>
 #include <cstdint>
+#include <optional>
 #include <vector>
 
 #include "database/Connection.h"
@@ -55,6 +56,35 @@ TEST_F(QueryTest, getColumnValue_blob) {
   const auto defaultValue = std::vector<std::byte>{16ul};
   EXPECT_THAT(f, ::testing::Not(::testing::Eq(defaultValue)));
   EXPECT_THAT(f.size(), ::testing::Eq(defaultValue.size()));
+}
+
+TEST_F(QueryTest, getColumnValue_optInt) {
+  auto query = Database::Query{R"sql(select null 'value')sql", m_conn};
+  query.execute();
+
+  EXPECT_THAT(query.get<std::optional<int64_t>>("value"), ::testing::Eq(std::nullopt));
+}
+
+TEST_F(QueryTest, getColumnValue_optString) {
+  auto query = Database::Query{R"sql(select null 'value')sql", m_conn};
+  query.execute();
+
+  EXPECT_THAT(query.get<std::optional<std::string>>("value"), ::testing::Eq(std::nullopt));
+}
+
+TEST_F(QueryTest, getColumnValue_optDouble) {
+  auto query = Database::Query{R"sql(select null 'value')sql", m_conn};
+  query.execute();
+
+  EXPECT_THAT(query.get<std::optional<double>>("value"), ::testing::Eq(std::nullopt));
+}
+
+
+TEST_F(QueryTest, getColumnValue_optBlob) {
+  auto query = Database::Query{R"sql(select null 'value')sql", m_conn};
+  query.execute();
+
+  EXPECT_THAT(query.get<std::optional<std::vector<std::byte>>>("value"), ::testing::Eq(std::nullopt));
 }
 
 } // namespace

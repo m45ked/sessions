@@ -7,6 +7,7 @@
 #include <iostream>
 #include <locale>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <type_traits>
@@ -95,22 +96,25 @@ Query::Query(const std::string_view &sql, Connection &connection)
 
 auto Query::execute() -> void { m_impl->execute(); }
 
-template <> auto detail::getFromQuery<double>(sqlite3_stmt *stmt, int idx) -> double {
+namespace detail
+{
+
+template <> auto getFromQuery<double>(sqlite3_stmt *stmt, int idx) -> double {
   return sqlite3_column_double(stmt, idx);
 }
 
-template <> auto detail::getFromQuery<int64_t>(sqlite3_stmt *stmt, int idx) -> int64_t {
+template <> auto getFromQuery<int64_t>(sqlite3_stmt *stmt, int idx) -> int64_t {
   return sqlite3_column_int64(stmt, idx);
 }
 
-template <> auto detail::getFromQuery(sqlite3_stmt *stmt, int idx) -> std::string {
+template <> auto getFromQuery(sqlite3_stmt *stmt, int idx) -> std::string {
   const auto text = sqlite3_column_text(stmt, idx);
   const std::size_t length = sqlite3_column_bytes(stmt, idx);
   return {reinterpret_cast<const char *>(text), length};
 }
 
 template <>
-auto detail::getFromQuery(sqlite3_stmt *stmt, int idx) -> std::vector<std::byte> {
+auto getFromQuery(sqlite3_stmt *stmt, int idx) -> std::vector<std::byte> {
   const auto value = static_cast<const char *>(sqlite3_column_blob(stmt, idx));
   const auto length = sqlite3_column_bytes(stmt, idx);
   auto vec = std::vector<std::byte>{static_cast<unsigned long>(length)};
@@ -121,6 +125,8 @@ auto detail::getFromQuery(sqlite3_stmt *stmt, int idx) -> std::vector<std::byte>
 
   return vec;
 }
+
+} // namespace detail
 
 int Query::getColumnIdxFromStatement(const std::string_view &fieldName) {
   return m_impl->getIndex(fieldName);
