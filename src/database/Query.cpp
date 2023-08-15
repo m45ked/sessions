@@ -12,9 +12,8 @@
 #include <type_traits>
 #include <vector>
 
+#include "spdlog/spdlog.h"
 #include "sqlite/sqlite3.h"
-
-#include "spdlog/fmt/fmt.h"
 
 #include "database/Connection.h"
 #include "database/Exceptions.h"
@@ -70,13 +69,13 @@ auto Query::Impl::execute() -> void {
   while (sqlite3_step(stmt) != SQLITE_ROW) {
   }
 
-  fmt::print("Called \"{}\"\n", sqlite3_normalized_sql(stmt));
+  spdlog::debug("Called \"{}\"\n", sqlite3_normalized_sql(stmt));
 
   const auto columnCount = sqlite3_column_count(stmt);
   for (auto i = 0; i < columnCount; ++i) {
     const auto name = getLowerCaseString({sqlite3_column_name(stmt, i)});
 
-    fmt::print("Got column: '{}'\n", name);
+    spdlog::debug("Got column: '{}'\n", name);
     m_columns.emplace_back(name);
   }
 }

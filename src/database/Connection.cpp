@@ -3,7 +3,7 @@
 #include <memory>
 #include <string_view>
 
-#include "spdlog/fmt/fmt.h"
+#include "spdlog/spdlog.h"
 
 #include "sqlite3.h"
 
