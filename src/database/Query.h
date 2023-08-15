@@ -58,7 +58,8 @@ public:
   void set(std::string_view fieldName, const ValueT &value) {
     detail::bindParameterValue(
         getRawStatement(),
-        sqlite3_bind_parameter_index(getRawStatement(), fmt::format(":{}", fieldName).c_str()),
+        sqlite3_bind_parameter_index(getRawStatement(),
+                                     fmt::format(":{}", fieldName).c_str()),
         value);
   }
 
