@@ -17,8 +17,12 @@
 
 namespace Database {
 
+namespace detail {
+
 template <typename ValueT>
 auto getFromQuery(sqlite3_stmt *stmt, int idx) -> ValueT;
+
+}
 
 class DATABASE_EXPORT Query {
 public:
@@ -29,8 +33,8 @@ public:
 
   template <typename ValueT>
   auto get(const std::string_view &fieldName) -> ValueT {
-    return getFromQuery<ValueT>(getRawStatement(),
-                                getColumnIdxFromStatement(fieldName));
+    return detail::getFromQuery<ValueT>(getRawStatement(),
+                                        getColumnIdxFromStatement(fieldName));
   }
 
 private:
