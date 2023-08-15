@@ -37,8 +37,6 @@ template <typename ValueT>
 auto bindParameterValue(sqlite3_stmt *stmt, int idx, const ValueT &value)
     -> void;
 
-template <typename ValueT> auto bindNullValue(sqlite3_stmt *stmt, int idx);
-
 template <typename ValueT>
 inline auto bindParameterOptionalValue(sqlite3_stmt *stmt, int idx,
                                        const ValueT &value) -> void {
