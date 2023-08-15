@@ -91,4 +91,31 @@ TEST_F(QueryTest, getColumnValue_optBlob) {
               ::testing::Eq(std::nullopt));
 }
 
+TEST_F(QueryTest, setColumnValue_int)
+{
+  auto query = Q{R"sql(select :val 'value')sql", m_conn};
+  query.set("val", 1);
+  query.execute();
+
+  EXPECT_THAT(query.get<int64_t>("value"), ::testing::Eq(1));
+}
+
+TEST_F(QueryTest, setColumnValue_double)
+{
+  auto query = Q{R"sql(select :val 'value')sql", m_conn};
+  query.set("val", 3.1514);
+  query.execute();
+
+  EXPECT_THAT(query.get<double>("value"), ::testing::Eq(3.1514));
+}
+
+TEST_F(QueryTest, setColumnValue_string)
+{
+  auto query = Q{R"sql(select :val 'value')sql", m_conn};
+  query.set("val", std::string{"dupa"});
+  query.execute();
+
+  EXPECT_THAT(query.get<std::string>("value"), ::testing::Eq("dupa"));
+}
+
 } // namespace

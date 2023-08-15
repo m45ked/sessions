@@ -15,6 +15,7 @@
 #include "database/Connection_fwd.h"
 #include "database/Query_fwd.h"
 #include "database/database_export.h"
+#include "spdlog/fmt/bundled/format.h"
 #include "sqlite3.h"
 
 namespace Database {
@@ -32,6 +33,9 @@ inline auto getOptionalFromQuery(sqlite3_stmt *stmt, int idx) -> ValueT {
   return getFromQuery<typename ValueT::value_type>(stmt, idx);
 }
 
+template <typename ValueT>
+void bindParameterValue(sqlite3_stmt *stmt, int idx, const ValueT &value);
+
 } // namespace detail
 
 class DATABASE_EXPORT Query {
@@ -48,6 +52,14 @@ public:
       return detail::getOptionalFromQuery<ValueT>(stmt, idx);
 
     return detail::getFromQuery<ValueT>(stmt, idx);
+  }
+
+  template <typename ValueT>
+  void set(std::string_view fieldName, const ValueT &value) {
+    detail::bindParameterValue(
+        getRawStatement(),
+        sqlite3_bind_parameter_index(getRawStatement(), fmt::format(":{}", fieldName).c_str()),
+        value);
   }
 
 private:

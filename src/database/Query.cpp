@@ -8,11 +8,13 @@
 #include <locale>
 #include <memory>
 #include <optional>
+#include <stdexcept>
 #include <string>
 #include <string_view>
 #include <type_traits>
 #include <vector>
 
+#include "spdlog/fmt/bundled/format.h"
 #include "spdlog/spdlog.h"
 #include "sqlite/sqlite3.h"
 
@@ -123,6 +125,31 @@ auto getFromQuery(sqlite3_stmt *stmt, int idx) -> std::vector<std::byte> {
   }
 
   return vec;
+}
+
+template <>
+void bindParameterValue(sqlite3_stmt *stmt, int idx, const int &value) {
+  fmt::print("idx: {} value", idx);
+  const auto val = sqlite3_bind_int64(stmt, idx, value); // TODO Błędne kody
+  if (val != SQLITE_OK)
+    throw std::runtime_error(fmt::format("dupa {}", val));
+}
+
+template <>
+void bindParameterValue(sqlite3_stmt *stmt, int idx, const double &value) {
+  fmt::print("idx: {} value", idx);
+  const auto val = sqlite3_bind_double(stmt, idx, value); // TODO Błędne kody
+  if (val != SQLITE_OK)
+    throw std::runtime_error(fmt::format("dupa {}", val));
+}
+
+template <>
+void bindParameterValue(sqlite3_stmt *stmt, int idx, const std::string &value) {
+  fmt::print("idx: {} value", idx);
+  const auto val = sqlite3_bind_text(stmt, idx, value.data(), value.size(),
+                                     SQLITE_TRANSIENT); // TODO Błędne kody
+  if (val != SQLITE_OK)
+    throw std::runtime_error(fmt::format("dupa {}", val));
 }
 
 } // namespace detail
