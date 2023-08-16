@@ -7,19 +7,11 @@
 
 namespace {
 
-class isTableExistsTest : public testing::Test {
-protected:
+TEST(isTableExistsTest, table_not_Exists) {
   Database::Connection m_conn;
-};
-
-TEST_F(isTableExistsTest, tableNotExists) {
   ASSERT_THAT(Database::isTableExist(m_conn, "foo"), testing::IsFalse());
-}
-
-TEST_F(isTableExistsTest, tableExists) {
   Database::Query{"create table foo ( id number )", m_conn}.execute();
   ASSERT_THAT(Database::isTableExist(m_conn, "foo"), testing::IsTrue());
 }
-
 
 } // namespace
