@@ -1,4 +1,5 @@
 #include <cinttypes>
+#include <cstddef>
 #include <cstdint>
 #include <optional>
 #include <vector>
@@ -115,6 +116,16 @@ TEST_F(QueryTest, setColumnValue_string) {
   EXPECT_THAT(query.get<std::string>("value"), ::testing::Eq("dupa"));
 }
 
+TEST_F(QueryTest, setColumnValue_blob) {
+  const auto value = std::vector<std::byte>{std::byte{0b001}, std::byte{0b101},
+                                            std::byte{0b110}};
+  auto query = Q{R"sql(select :val 'value')sql", m_conn};
+  query.set("val", value);
+  query.execute();
+
+  EXPECT_THAT(query.get<std::vector<std::byte>>("value"), ::testing::Eq(value));
+}
+
 TEST_F(QueryTest, setColumnValue_optInt) {
   auto query = Q{R"sql(select :val 'value')sql", m_conn};
   query.set("val", std::optional<int>{});
@@ -139,6 +150,15 @@ TEST_F(QueryTest, setColumnValue_optString) {
   query.execute();
 
   EXPECT_THAT(query.get<std::optional<std::string>>("value"),
+              ::testing::Eq(std::nullopt));
+}
+
+TEST_F(QueryTest, setColumnValue_optBlob) {
+  auto query = Q{R"sql(select :val 'value')sql", m_conn};
+  query.set("val", std::optional<std::vector<std::byte>>{});
+  query.execute();
+
+  EXPECT_THAT(query.get<std::optional<std::vector<std::byte>>>("value"),
               ::testing::Eq(std::nullopt));
 }
 

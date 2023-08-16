@@ -154,6 +154,15 @@ auto bindParameterValue(sqlite3_stmt *stmt, int idx, const std::string &value)
     throw std::runtime_error(fmt::format("dupa {}", val));
 }
 
+template <>
+auto bindParameterValue(sqlite3_stmt *stmt, int idx,
+                        const std::vector<std::byte> &value) -> void {
+  fmt::print("idx: {} value", idx);
+  const auto val = sqlite3_bind_blob(stmt, idx, value.data(), value.size(),
+                                     SQLITE_TRANSIENT); // TODO Błędne kody
+  if (val != SQLITE_OK)
+    throw std::runtime_error(fmt::format("dupa {}", val));
+}
 } // namespace detail
 
 auto Query::getColumnIdxFromStatement(std::string_view fieldName) const -> int {
