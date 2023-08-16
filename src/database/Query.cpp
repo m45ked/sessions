@@ -69,7 +69,16 @@ Query::Impl::Impl(std::string_view sql, sqlite3 *dbConnection) {
 
 auto Query::Impl::execute() -> void {
   const auto stmt = m_dbStatement.get();
-  while (sqlite3_step(stmt) != SQLITE_ROW) {
+
+  auto val = sqlite3_step(stmt);
+  if (val != SQLITE_DONE)
+  {
+    while (sqlite3_step(stmt) != SQLITE_ROW) {
+    }
+  }
+  if (val == SQLITE_ERROR)
+  {
+    // todo: throw Error
   }
 
   spdlog::debug("Called \"{}\"\n", sqlite3_normalized_sql(stmt));

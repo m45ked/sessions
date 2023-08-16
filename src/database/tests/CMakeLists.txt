@@ -1,5 +1,6 @@
 add_executable(DatabaseTests
   connectionTests.cpp
+  isTableExistTests.cpp
   queryTests.cpp)
 target_link_libraries(DatabaseTests
   database

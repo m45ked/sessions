@@ -13,6 +13,7 @@ endif()
 
 add_library(database
     Connection.cpp
+    isTableExist.cpp
     Query.cpp
 )
 target_link_libraries(database sqlite_ext spdlog::spdlog)
