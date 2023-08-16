@@ -162,4 +162,10 @@ TEST_F(QueryTest, setColumnValue_optBlob) {
               ::testing::Eq(std::nullopt));
 }
 
+TEST_F(QueryTest, setValue_expectThrowWhenNoParameter) {
+  auto query = Q{R"sql(select :v 'value')sql", m_conn};
+
+  EXPECT_THROW(query.set("value", 1), Database::NoSuchSqlParameter);
+}
+
 } // namespace

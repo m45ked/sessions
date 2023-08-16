@@ -66,8 +66,7 @@ public:
 
   template <typename ValueT>
   void set(std::string_view fieldName, const ValueT &value) {
-    const auto idx = sqlite3_bind_parameter_index(
-        getRawStatement(), fmt::format(":{}", fieldName).c_str());
+    const auto idx = getParmameterIndex(fieldName);
     const auto stmt = getRawStatement();
 
     if constexpr (Core::type_traits::is_optional_v<ValueT>)
@@ -79,6 +78,7 @@ public:
 private:
   auto getRawStatement() const -> sqlite3_stmt *;
   auto getColumnIdxFromStatement(std::string_view fieldName) const -> int;
+  auto getParmameterIndex(std::string_view parameterName) const -> int;
 
   class Impl;
   std::unique_ptr<Impl> m_impl;

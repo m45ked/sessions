@@ -173,4 +173,13 @@ auto Query::getRawStatement() const -> sqlite3_stmt * {
   return m_impl->getStatement();
 }
 
+auto Query::getParmameterIndex(std::string_view parameterName) const -> int {
+  const auto idx = sqlite3_bind_parameter_index(
+      getRawStatement(), fmt::format(":{}", parameterName).c_str());
+  if (!idx)
+    throw NoSuchSqlParameter(parameterName);
+
+  return idx;
+}
+
 } // namespace Database
