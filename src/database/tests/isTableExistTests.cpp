@@ -10,7 +10,7 @@ namespace {
 TEST(isTableExistsTest, table_not_Exists) {
   Database::Connection m_conn;
   ASSERT_THAT(Database::isTableExist(m_conn, "foo"), testing::IsFalse());
-  Database::Query{"create table foo ( id number )", m_conn}.execute();
+  Database::Query{R"sql(create table foo (id number))sql", m_conn}.execute();
   ASSERT_THAT(Database::isTableExist(m_conn, "foo"), testing::IsTrue());
 }
 
