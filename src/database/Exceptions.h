@@ -23,4 +23,11 @@ public:
   std::string parameterName;
 };
 
+struct QueryError : public std::runtime_error {
+  QueryError(int errorCode, std::string_view msg)
+      : std::runtime_error(msg.data()), errorCode(errorCode) {}
+
+  int errorCode;
+};
+
 } // namespace Database

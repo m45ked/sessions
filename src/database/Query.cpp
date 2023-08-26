@@ -63,7 +63,7 @@ Query::Impl::Impl(std::string_view sql, sqlite3 *dbConnection) {
   m_dbStatement =
       std::unique_ptr<sqlite3_stmt, statement_deleter>(std::move(statement));
   if (result != SQLITE_OK) {
-    throw IncorrectQuerySql(sql);
+    throw QueryError(result, sqlite3_errmsg(dbConnection));
   }
 }
 
@@ -71,14 +71,16 @@ auto Query::Impl::execute() -> void {
   const auto stmt = m_dbStatement.get();
 
   auto val = sqlite3_step(stmt);
-  if (val != SQLITE_DONE)
-  {
+  if (val != SQLITE_DONE) {
     while (sqlite3_step(stmt) != SQLITE_ROW) {
     }
   }
-  if (val == SQLITE_ERROR)
-  {
-    // todo: throw Error
+  if (val == SQLITE_ERROR) {
+    auto db = sqlite3_db_handle(m_dbStatement.get());
+    const auto errorStr = sqlite3_errmsg(db);
+    const auto errorCode = sqlite3_errcode(db);
+
+    throw QueryError(errorCode, errorStr);
   }
 
   spdlog::debug("Called \"{}\"\n", sqlite3_normalized_sql(stmt));
@@ -115,6 +117,10 @@ template <> auto getFromQuery<double>(sqlite3_stmt *stmt, int idx) -> double {
 
 template <> auto getFromQuery<int64_t>(sqlite3_stmt *stmt, int idx) -> int64_t {
   return sqlite3_column_int64(stmt, idx);
+}
+
+template <> auto getFromQuery<int>(sqlite3_stmt *stmt, int idx) -> int {
+  return sqlite3_column_int(stmt, idx);
 }
 
 template <> auto getFromQuery(sqlite3_stmt *stmt, int idx) -> std::string {
@@ -165,6 +171,22 @@ auto bindParameterValue(sqlite3_stmt *stmt, int idx, const std::string &value)
 
 template <>
 auto bindParameterValue(sqlite3_stmt *stmt, int idx,
+                        const std::string_view &value) -> void {
+  fmt::print("idx: {} value", idx);
+  const auto val = sqlite3_bind_text(stmt, idx, value.data(), value.size(),
+                                     SQLITE_TRANSIENT); // TODO Błędne kody
+  if (val != SQLITE_OK)
+    throw std::runtime_error(fmt::format("dupa {}", val));
+}
+
+template <>
+auto bindParameterValue(sqlite3_stmt *stmt, int idx, const char *const &value)
+    -> void {
+  bindParameterValue(stmt, idx, std::string{value});
+}
+
+template <>
+auto bindParameterValue(sqlite3_stmt *stmt, int idx,
                         const std::vector<std::byte> &value) -> void {
   fmt::print("idx: {} value", idx);
   const auto val = sqlite3_bind_blob(stmt, idx, value.data(), value.size(),
@@ -172,6 +194,7 @@ auto bindParameterValue(sqlite3_stmt *stmt, int idx,
   if (val != SQLITE_OK)
     throw std::runtime_error(fmt::format("dupa {}", val));
 }
+
 } // namespace detail
 
 auto Query::getColumnIdxFromStatement(std::string_view fieldName) const -> int {

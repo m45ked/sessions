@@ -27,7 +27,7 @@ TEST_F(QueryTest, createSimpleQuery) {
 }
 
 TEST_F(QueryTest, createIncorrectQuery) {
-  EXPECT_THROW(Q(R"sql(select)sql", m_conn), Database::IncorrectQuerySql);
+  EXPECT_THROW(Q(R"sql(select)sql", m_conn), Database::QueryError);
 }
 
 TEST_F(QueryTest, getColumnValue_int) {
