@@ -14,7 +14,6 @@
 #include <type_traits>
 #include <vector>
 
-#include "spdlog/fmt/bundled/format.h"
 #include "spdlog/spdlog.h"
 #include "sqlite/sqlite3.h"
 

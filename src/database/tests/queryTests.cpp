@@ -7,7 +7,6 @@
 #include "database/Connection.h"
 #include "database/Exceptions.h"
 #include "database/Query.h"
-#include "gmock/gmock-more-matchers.h"
 #include "gmock/gmock.h"
 #include "gtest/gtest-matchers.h"
 #include "gtest/gtest.h"

@@ -4,7 +4,6 @@
 #include <string>
 
 #include "database/Query.h"
-#include "spdlog/fmt/bundled/core.h"
 
 namespace Database {
 

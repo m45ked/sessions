@@ -13,9 +13,7 @@
 
 #include "core/type_traits/is_optional_v.h"
 #include "database/Connection_fwd.h"
-#include "database/Query_fwd.h"
 #include "database/database_export.h"
-#include "spdlog/fmt/bundled/format.h"
 #include "sqlite3.h"
 
 namespace Database {

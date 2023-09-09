@@ -3,11 +3,9 @@
 #include <memory>
 #include <string_view>
 
-#include "spdlog/spdlog.h"
-
-#include "sqlite3.h"
-
 #include "database/Exceptions.h"
+#include "spdlog/fmt/bundled/core.h"
+#include "sqlite3.h"
 
 namespace {
 
