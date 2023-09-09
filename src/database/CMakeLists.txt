@@ -13,8 +13,14 @@ endif()
 
 add_library(database
     Connection.cpp
+    Connection_fwd.h
+    Connection.h
+    Exceptions.h
     isTableExist.cpp
+    isTableExist.h
     Query.cpp
+    Query_fwd.h
+    Query.h
 )
 target_link_libraries(database sqlite_ext spdlog::spdlog)
 generate_export_header(database)
