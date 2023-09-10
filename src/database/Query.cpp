@@ -146,7 +146,7 @@ auto bindParameterValue(sqlite3_stmt *stmt, int idx, const int &value) -> void {
   fmt::print("idx: {} value", idx);
   const auto val = sqlite3_bind_int64(stmt, idx, value); // TODO Błędne kody
   if (val != SQLITE_OK)
-    throw std::runtime_error(fmt::format("dupa {}", val));
+    throw DatabaseRuntimeError(fmt::format("dupa {}", val));
 }
 
 template <>
@@ -155,7 +155,7 @@ auto bindParameterValue(sqlite3_stmt *stmt, int idx, const double &value)
   fmt::print("idx: {} value", idx);
   const auto val = sqlite3_bind_double(stmt, idx, value); // TODO Błędne kody
   if (val != SQLITE_OK)
-    throw std::runtime_error(fmt::format("dupa {}", val));
+    throw DatabaseRuntimeError(fmt::format("dupa {}", val));
 }
 
 template <>
@@ -165,7 +165,7 @@ auto bindParameterValue(sqlite3_stmt *stmt, int idx, const std::string &value)
   const auto val = sqlite3_bind_text(stmt, idx, value.data(), value.size(),
                                      SQLITE_TRANSIENT); // TODO Błędne kody
   if (val != SQLITE_OK)
-    throw std::runtime_error(fmt::format("dupa {}", val));
+    throw DatabaseRuntimeError(fmt::format("dupa {}", val));
 }
 
 template <>
@@ -175,7 +175,7 @@ auto bindParameterValue(sqlite3_stmt *stmt, int idx,
   const auto val = sqlite3_bind_text(stmt, idx, value.data(), value.size(),
                                      SQLITE_TRANSIENT); // TODO Błędne kody
   if (val != SQLITE_OK)
-    throw std::runtime_error(fmt::format("dupa {}", val));
+    throw DatabaseRuntimeError(fmt::format("dupa {}", val));
 }
 
 template <>
@@ -191,7 +191,7 @@ auto bindParameterValue(sqlite3_stmt *stmt, int idx,
   const auto val = sqlite3_bind_blob(stmt, idx, value.data(), value.size(),
                                      SQLITE_TRANSIENT); // TODO Błędne kody
   if (val != SQLITE_OK)
-    throw std::runtime_error(fmt::format("dupa {}", val));
+    throw DatabaseRuntimeError(fmt::format("dupa {}", val));
 }
 
 } // namespace detail
