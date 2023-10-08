@@ -25,6 +25,7 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/output)
 
 add_compile_options(-fsanitize=address)
 add_link_options(-fsanitize=address)
+add_compile_options(-Wstring-conversion)
 
 include(GenerateExportHeader)
 include(FetchContent)
