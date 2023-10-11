@@ -37,7 +37,7 @@ auto bindParameterValue(sqlite3_stmt *stmt, int idx, const ValueT &value)
 
 template <typename ValueT>
 inline auto bindParameterOptionalValue(sqlite3_stmt *stmt, int idx,
-                                       const ValueT &value) -> void {
+                                       ValueT&& value) -> void {
   if (value)
     bindParameterValue(stmt, idx, value.value());
   else
@@ -56,6 +56,7 @@ public:
   template <typename ValueT> auto get(std::string_view fieldName) -> ValueT {
     const auto stmt = getRawStatement();
     const auto idx = getColumnIdxFromStatement(fieldName);
+
     if constexpr (Core::type_traits::is_optional_v<ValueT>)
       return detail::getOptionalFromQuery<ValueT>(stmt, idx);
 
@@ -63,11 +64,13 @@ public:
   }
 
   template <typename ValueT>
-  void set(std::string_view fieldName, const ValueT &value) {
+  void set(std::string_view fieldName, ValueT&&value) {
     const auto idx = getParmameterIndex(fieldName);
     const auto stmt = getRawStatement();
 
-    if constexpr (Core::type_traits::is_optional_v<ValueT>)
+    using UnRef = std::remove_reference_t<ValueT>;
+
+    if constexpr (Core::type_traits::is_optional_v<UnRef>)
       detail::bindParameterOptionalValue(stmt, idx, value);
     else
       detail::bindParameterValue(stmt, idx, value);

@@ -124,7 +124,7 @@ template <> auto getFromQuery<int>(sqlite3_stmt *stmt, int idx) -> int {
 
 template <> auto getFromQuery(sqlite3_stmt *stmt, int idx) -> std::string {
   const auto text = sqlite3_column_text(stmt, idx);
-  const std::size_t length = sqlite3_column_bytes(stmt, idx);
+  const size_t length = sqlite3_column_bytes(stmt, idx);
   return {reinterpret_cast<const char *>(text), length};
 }
 
